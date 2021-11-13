@@ -143,8 +143,7 @@ Public Class Main
     Private Sub PopulateStaffCbx()
 
         ' The Staff Member Combo Box defaults to the current user, but a user can change it if they 
-        ' choose to set sanctions on behalf of another staff member (e.g. sometimes Alison Williams
-        ' will do this).
+        ' choose to set sanctions on behalf of another staff member.
 
         StaffMemberCbx.Items.Clear()
 
@@ -174,7 +173,6 @@ Public Class Main
                 End Using 'StaffListQuery
 
                 ' Select the current user's entry in the Staff List by default. 
-
                 StaffMemberCbx.SelectedIndex = -1
                 For i = 0 To StaffMemberCbx.Items.Count - 1
                     Dim IndexUser As User = TryCast(StaffMemberCbx.Items(i), User)

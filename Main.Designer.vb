@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Main
     Inherits System.Windows.Forms.Form
 
@@ -24,12 +24,11 @@ Partial Class Main
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.SanctionTypeCbx = New System.Windows.Forms.ComboBox()
         Me.SanctionTypeLbl = New System.Windows.Forms.Label()
-        Me.SanctionDateCbx = New System.Windows.Forms.ComboBox()
+        Me.DateSelectorCbx = New System.Windows.Forms.ComboBox()
         Me.SanctionDateLbl = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
         Me.CommentTbx = New System.Windows.Forms.TextBox()
@@ -45,35 +44,27 @@ Partial Class Main
         Me.InformationOnlyLbl = New System.Windows.Forms.TextBox()
         Me.ReasonLbl = New System.Windows.Forms.Label()
         Me.ReasonCbx = New System.Windows.Forms.ComboBox()
-        Me.BindingSource1 = New System.Windows.Forms.BindingSource(Me.components)
-        Me.StudentPhotoPbx = New System.Windows.Forms.PictureBox()
         Me.ReportViewer1 = New Microsoft.Reporting.WinForms.ReportViewer()
         Me.ClassLbl = New System.Windows.Forms.Label()
         Me.ClassCbx = New System.Windows.Forms.ComboBox()
         Me.StaffMemberCbx = New System.Windows.Forms.ComboBox()
         Me.StaffMemberLbl = New System.Windows.Forms.Label()
+        Me.IncidentDateLbl = New System.Windows.Forms.Label()
+        Me.ViewCurrentBookingsBtn = New System.Windows.Forms.Button()
+        Me.StudentPhotoPbx = New System.Windows.Forms.PictureBox()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
+        Me.BindingSource1 = New System.Windows.Forms.BindingSource(Me.components)
+        CType(Me.StudentPhotoPbx, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.BindingSource1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.StudentPhotoPbx, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
-        '
-        'PictureBox1
-        '
-        Me.PictureBox1.Image = Global.BMS.My.Resources.Resources.Woodcroft_College_CMYK_TransBack_v2
-        Me.PictureBox1.Location = New System.Drawing.Point(13, 14)
-        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(102, 116)
-        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.PictureBox1.TabIndex = 3
-        Me.PictureBox1.TabStop = False
         '
         'Label1
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(10, 224)
+        Me.Label1.Location = New System.Drawing.Point(10, 237)
         Me.Label1.Margin = New System.Windows.Forms.Padding(0)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(70, 18)
@@ -85,7 +76,7 @@ Partial Class Main
         '
         Me.Label2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(10, 147)
+        Me.Label2.Location = New System.Drawing.Point(10, 160)
         Me.Label2.Margin = New System.Windows.Forms.Padding(0)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(508, 65)
@@ -122,20 +113,20 @@ Partial Class Main
         Me.SanctionTypeLbl.Text = "Sanction type:"
         Me.SanctionTypeLbl.Visible = False
         '
-        'SanctionDateCbx
+        'DateSelectorCbx
         '
-        Me.SanctionDateCbx.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.SanctionDateCbx.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append
-        Me.SanctionDateCbx.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
-        Me.SanctionDateCbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.SanctionDateCbx.Font = New System.Drawing.Font("Gill Sans MT", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.SanctionDateCbx.FormattingEnabled = True
-        Me.SanctionDateCbx.Location = New System.Drawing.Point(840, 234)
-        Me.SanctionDateCbx.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.SanctionDateCbx.Name = "SanctionDateCbx"
-        Me.SanctionDateCbx.Size = New System.Drawing.Size(267, 29)
-        Me.SanctionDateCbx.TabIndex = 9
-        Me.SanctionDateCbx.Visible = False
+        Me.DateSelectorCbx.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DateSelectorCbx.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append
+        Me.DateSelectorCbx.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
+        Me.DateSelectorCbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.DateSelectorCbx.Font = New System.Drawing.Font("Gill Sans MT", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DateSelectorCbx.FormattingEnabled = True
+        Me.DateSelectorCbx.Location = New System.Drawing.Point(840, 234)
+        Me.DateSelectorCbx.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.DateSelectorCbx.Name = "DateSelectorCbx"
+        Me.DateSelectorCbx.Size = New System.Drawing.Size(267, 29)
+        Me.DateSelectorCbx.TabIndex = 9
+        Me.DateSelectorCbx.Visible = False
         '
         'SanctionDateLbl
         '
@@ -189,7 +180,7 @@ Partial Class Main
         '
         Me.SubmitBtn.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.SubmitBtn.Font = New System.Drawing.Font("Gill Sans MT", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.SubmitBtn.Location = New System.Drawing.Point(952, 467)
+        Me.SubmitBtn.Location = New System.Drawing.Point(953, 451)
         Me.SubmitBtn.Name = "SubmitBtn"
         Me.SubmitBtn.Size = New System.Drawing.Size(156, 31)
         Me.SubmitBtn.TabIndex = 12
@@ -281,7 +272,7 @@ Partial Class Main
         Me.InformationOnlyChk.AutoSize = True
         Me.InformationOnlyChk.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.InformationOnlyChk.Font = New System.Drawing.Font("Gill Sans MT", 11.0!)
-        Me.InformationOnlyChk.Location = New System.Drawing.Point(970, 385)
+        Me.InformationOnlyChk.Location = New System.Drawing.Point(971, 367)
         Me.InformationOnlyChk.Name = "InformationOnlyChk"
         Me.InformationOnlyChk.Size = New System.Drawing.Size(137, 25)
         Me.InformationOnlyChk.TabIndex = 11
@@ -294,7 +285,7 @@ Partial Class Main
         Me.InformationOnlyLbl.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.InformationOnlyLbl.Enabled = False
         Me.InformationOnlyLbl.Font = New System.Drawing.Font("Gill Sans MT", 9.0!)
-        Me.InformationOnlyLbl.Location = New System.Drawing.Point(743, 416)
+        Me.InformationOnlyLbl.Location = New System.Drawing.Point(744, 399)
         Me.InformationOnlyLbl.Multiline = True
         Me.InformationOnlyLbl.Name = "InformationOnlyLbl"
         Me.InformationOnlyLbl.ReadOnly = True
@@ -323,7 +314,6 @@ Partial Class Main
         Me.ReasonCbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ReasonCbx.Font = New System.Drawing.Font("Gill Sans MT", 11.0!)
         Me.ReasonCbx.FormattingEnabled = True
-        Me.ReasonCbx.Items.AddRange(New Object() {"OTHER", "Behaviour", "Homework", "Classwork", "Attendance", "Uniform", "Assignment"})
         Me.ReasonCbx.Location = New System.Drawing.Point(840, 197)
         Me.ReasonCbx.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.ReasonCbx.Name = "ReasonCbx"
@@ -331,24 +321,12 @@ Partial Class Main
         Me.ReasonCbx.TabIndex = 8
         Me.ReasonCbx.Visible = False
         '
-        'StudentPhotoPbx
-        '
-        Me.StudentPhotoPbx.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.StudentPhotoPbx.Location = New System.Drawing.Point(13, 271)
-        Me.StudentPhotoPbx.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.StudentPhotoPbx.Name = "StudentPhotoPbx"
-        Me.StudentPhotoPbx.Size = New System.Drawing.Size(198, 235)
-        Me.StudentPhotoPbx.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.StudentPhotoPbx.TabIndex = 39
-        Me.StudentPhotoPbx.TabStop = False
-        Me.StudentPhotoPbx.Visible = False
-        '
         'ReportViewer1
         '
         Me.ReportViewer1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.ReportViewer1.BackColor = System.Drawing.SystemColors.Control
         Me.ReportViewer1.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.ReportViewer1.Location = New System.Drawing.Point(218, 271)
+        Me.ReportViewer1.Location = New System.Drawing.Point(218, 284)
         Me.ReportViewer1.Name = "ReportViewer1"
         Me.ReportViewer1.ProcessingMode = Microsoft.Reporting.WinForms.ProcessingMode.Remote
         Me.ReportViewer1.ServerReport.ReportPath = "/Behaviour Monitoring System/Staffsms"
@@ -415,11 +393,65 @@ Partial Class Main
         Me.StaffMemberLbl.Text = "Staff Member:"
         Me.StaffMemberLbl.Visible = False
         '
+        'IncidentDateLbl
+        '
+        Me.IncidentDateLbl.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.IncidentDateLbl.AutoSize = True
+        Me.IncidentDateLbl.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.IncidentDateLbl.Location = New System.Drawing.Point(742, 239)
+        Me.IncidentDateLbl.Margin = New System.Windows.Forms.Padding(0)
+        Me.IncidentDateLbl.Name = "IncidentDateLbl"
+        Me.IncidentDateLbl.Size = New System.Drawing.Size(94, 18)
+        Me.IncidentDateLbl.TabIndex = 45
+        Me.IncidentDateLbl.Text = "Incident date:"
+        Me.IncidentDateLbl.Visible = False
+        '
+        'ViewCurrentBookingsBtn
+        '
+        Me.ViewCurrentBookingsBtn.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ViewCurrentBookingsBtn.AutoSize = True
+        Me.ViewCurrentBookingsBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ViewCurrentBookingsBtn.BackColor = System.Drawing.SystemColors.ControlDarkDark
+        Me.ViewCurrentBookingsBtn.Font = New System.Drawing.Font("Gill Sans MT", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ViewCurrentBookingsBtn.ForeColor = System.Drawing.SystemColors.ButtonFace
+        Me.ViewCurrentBookingsBtn.Location = New System.Drawing.Point(911, 488)
+        Me.ViewCurrentBookingsBtn.Name = "ViewCurrentBookingsBtn"
+        Me.ViewCurrentBookingsBtn.Size = New System.Drawing.Size(198, 31)
+        Me.ViewCurrentBookingsBtn.TabIndex = 46
+        Me.ViewCurrentBookingsBtn.Text = "View Your Current Bookings"
+        Me.ViewCurrentBookingsBtn.UseVisualStyleBackColor = False
+        '
+        'StudentPhotoPbx
+        '
+        Me.StudentPhotoPbx.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.StudentPhotoPbx.Location = New System.Drawing.Point(13, 284)
+        Me.StudentPhotoPbx.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.StudentPhotoPbx.Name = "StudentPhotoPbx"
+        Me.StudentPhotoPbx.Size = New System.Drawing.Size(198, 235)
+        Me.StudentPhotoPbx.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.StudentPhotoPbx.TabIndex = 39
+        Me.StudentPhotoPbx.TabStop = False
+        Me.StudentPhotoPbx.Visible = False
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = Global.BMS.My.Resources.Resources.Woodcroft_College_CMYK_TransBack_v2
+        Me.PictureBox1.Location = New System.Drawing.Point(13, 14)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(102, 116)
+        Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.PictureBox1.TabIndex = 3
+        Me.PictureBox1.TabStop = False
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1120, 518)
+        Me.ClientSize = New System.Drawing.Size(1120, 531)
+        Me.Controls.Add(Me.ViewCurrentBookingsBtn)
+        Me.Controls.Add(Me.SanctionDateLbl)
+        Me.Controls.Add(Me.IncidentDateLbl)
         Me.Controls.Add(Me.StaffMemberLbl)
         Me.Controls.Add(Me.StaffMemberCbx)
         Me.Controls.Add(Me.InformationOnlyChk)
@@ -439,8 +471,7 @@ Partial Class Main
         Me.Controls.Add(Me.CommentLbl)
         Me.Controls.Add(Me.CommentTbx)
         Me.Controls.Add(Me.Label4)
-        Me.Controls.Add(Me.SanctionDateLbl)
-        Me.Controls.Add(Me.SanctionDateCbx)
+        Me.Controls.Add(Me.DateSelectorCbx)
         Me.Controls.Add(Me.SanctionTypeLbl)
         Me.Controls.Add(Me.SanctionTypeCbx)
         Me.Controls.Add(Me.Label2)
@@ -450,9 +481,9 @@ Partial Class Main
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Main"
         Me.Text = "BMS - Behaviour Management System"
+        CType(Me.StudentPhotoPbx, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.BindingSource1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.StudentPhotoPbx, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -463,7 +494,7 @@ Partial Class Main
     Friend WithEvents SanctionTypeCbx As ComboBox
     Friend WithEvents SanctionTypeLbl As Label
     Friend WithEvents StudentsMbx As MatchingComboBox
-    Friend WithEvents SanctionDateCbx As ComboBox
+    Friend WithEvents DateSelectorCbx As ComboBox
     Friend WithEvents SanctionDateLbl As Label
     Friend WithEvents Label4 As Label
     Friend WithEvents CommentTbx As TextBox
@@ -486,4 +517,6 @@ Partial Class Main
     Friend WithEvents ClassCbx As ComboBox
     Friend WithEvents StaffMemberCbx As ComboBox
     Friend WithEvents StaffMemberLbl As Label
+    Friend WithEvents IncidentDateLbl As Label
+    Friend WithEvents ViewCurrentBookingsBtn As Button
 End Class

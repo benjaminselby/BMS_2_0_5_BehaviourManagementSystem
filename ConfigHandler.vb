@@ -1,66 +1,53 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.Configuration
 
-Public Class ConfigHandler
+NotInheritable Class ConfigHandler
 
-    Private Function GetConfigValue(keyValue As String) As String
+    Public Shared Function GetConfigValues(
+            keyValue1 As String,
+            Optional keyValue2 As String = Nothing,
+            Optional keyValue3 As String = Nothing,
+            Optional keyValue4 As String = Nothing,
+            Optional keyValue5 As String = Nothing) As List(Of String)
 
-        ' Load configuration settings from the BMS config database table. 
+        Dim returnValue As New List(Of String)
 
-        Using synergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+        Using synergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
+            Using configCmd As New SqlCommand(ConfigurationManager.AppSettings("GetConfigValuesProc"), synergyConn)
 
-            Using configCmd As New SqlCommand(ConfigurationManager.AppSettings("GetConfigValueProc"), synergyConn)
-
-                ' The GetConfigValue procedure should be configured such that it only returns 1 record. 
                 configCmd.CommandType = CommandType.StoredProcedure
-                configCmd.Parameters.AddWithValue("Key", keyValue)
+                configCmd.Parameters.AddWithValue("Key1", keyValue1)
+
+                If keyValue2 IsNot Nothing Then
+                    configCmd.Parameters.AddWithValue("Key2", keyValue2)
+                End If
+                If keyValue3 IsNot Nothing Then
+                    configCmd.Parameters.AddWithValue("Key3", keyValue3)
+                End If
+                If keyValue4 IsNot Nothing Then
+                    configCmd.Parameters.AddWithValue("Key4", keyValue4)
+                End If
+                If keyValue5 IsNot Nothing Then
+                    configCmd.Parameters.AddWithValue("Key5", keyValue5)
+                End If
 
                 synergyConn.Open()
 
                 Using configDataReader As SqlDataReader = configCmd.ExecuteReader()
 
                     If configDataReader.HasRows Then
-                        configDataReader.Read()
-                        If configDataReader("Value").ToString.Trim = "" Then
-                            Throw New System.Configuration.SettingsPropertyNotFoundException
-                        End If
-                        Return configDataReader("Value").ToString
+                        While configDataReader.Read()
+                            returnValue.Add(configDataReader("Value").ToString)
+                        End While
+                        Return returnValue
                     Else
-                        Throw New System.Configuration.SettingsPropertyNotFoundException
+                        Return Nothing
                     End If
 
                 End Using
             End Using
         End Using
 
-        ' Default return value. 
-        Return Nothing
-
     End Function
-
-
-    Public Sub SetConfigValue(Of T)(ByRef var As Object, configValueKey As String)
-
-        Try
-
-            ' Need to convert to Object via CObj to get this cast statement to work. 
-            var = CType(CObj(GetConfigValue(configValueKey)), T)
-
-        Catch ex As System.Configuration.SettingsPropertyNotFoundException
-
-            ' Configuration value missing from database. Revert to default value from APP.CONFIG.
-            var = ConfigurationManager.AppSettings(configValueKey)
-
-            If var Is Nothing Then
-                Dim errorMessage As String = String.Format(
-                    "Could not find configuration setting '{0}' in database config table or APP.CONFIG file.",
-                    configValueKey)
-                Throw New System.Configuration.SettingsPropertyNotFoundException(errorMessage, ex)
-            End If
-
-        End Try
-
-    End Sub
-
 
 End Class

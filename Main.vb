@@ -1,4 +1,4 @@
-﻿Imports System.Data.SqlClient
+Imports System.Data.SqlClient
 Imports System.IO
 Imports Microsoft.Reporting.WinForms
 Imports System.Configuration
@@ -6,32 +6,39 @@ Imports System.Configuration
 
 Public Class Main
 
-    'Private configManager As ConfigHandler = New ConfigHandler()
-
+    Private juniorSchoolFinalYear As Integer
     Private currentUser As User
     Private Const comboboxSpacerText As String = "==============================================="
+    Private sanctionsForUser As SanctionsForUser
+    Private version As String = "2.0.5"
 
     Public Sub New()
 
         ' This call is required by the designer.
         InitializeComponent()
 
-        ' Include version number in form title bar. 
-        Me.Text += " v2.0.4"
+        Me.Text += " v" + version
 
-        ' Not used any more but might be in future. 
-        ' LoadConfigValues()
+        juniorSchoolFinalYear = Integer.Parse(ConfigHandler.GetConfigValues("JuniorSchoolFinalYear")(0))
+
+
+        Dim sanctionReasons As List(Of String) = ConfigHandler.GetConfigValues("Reason")
+        For Each reason As String In sanctionReasons
+            ReasonCbx.Items.Add(reason)
+        Next
+
 
         ' The StudentsMbx is a custom control which enables better text-matching than an ordinary ComboBox. 
         ' It can't be successfully added to this form in the Design window because its code keeps disappearing 
         ' from the InitialiseComponent() function, so I have added it here. 
+
         Me.StudentsMbx = New BMS.MatchingComboBox()
         Me.StudentsMbx.FilterRule = Nothing
         Me.StudentsMbx.Font = New System.Drawing.Font("Gill Sans MT", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.StudentsMbx.FormattingEnabled = True
         Me.StudentsMbx.Name = "StudentsMbx"
         Me.StudentsMbx.PropertySelector = Nothing
-        Me.StudentsMbx.Location = New System.Drawing.Point(84, 220)
+        Me.StudentsMbx.Location = New System.Drawing.Point(84, 232)
         Me.StudentsMbx.Size = New System.Drawing.Size(493, 29)
         Me.StudentsMbx.SuggestBoxHeight = 96
         Me.StudentsMbx.SuggestListOrderRule = Nothing
@@ -46,9 +53,16 @@ Public Class Main
             ' Get information for the current user. 
 
             Dim currentUserWI As Security.Principal.WindowsIdentity = Security.Principal.WindowsIdentity.GetCurrent()
+            ' ===========================================================================================
+            ' DEBUGGING CODE 
+            ' ===========================================================================================
+            'MessageBox.Show("Running in debug mode!")
+            'Dim currentUserNetworkLogin = "schmidt_be"
+            ' ===========================================================================================
             Dim currentUserNetworkLogin = Strings.Right(currentUserWI.Name, Len(currentUserWI.Name) - Len("WOODCROFT/"))
 
-            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+
+            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
                 Using CurrentUserQuery As New SqlCommand(
                         ConfigurationManager.AppSettings("GetUserDetailsFromNetworkLoginProc"),
@@ -95,16 +109,6 @@ Public Class Main
     End Sub
 
 
-    Private Sub LoadConfigValues()
-
-        ' Examples only below. Do nothing for now. Later if required we can load config values from 
-        ' the Synergy DB here. 
-
-        'configManager.SetConfigValue(Of Boolean)(configSendEmails, "SendEmails")
-        'configManager.SetConfigValue(Of String)(mailServerName, "MailServerName")
-
-    End Sub
-
 
     Private Function Reset()
 
@@ -143,19 +147,20 @@ Public Class Main
     Private Sub PopulateStaffCbx()
 
         ' The Staff Member Combo Box defaults to the current user, but a user can change it if they 
-        ' choose to set sanctions on behalf of another staff member.
+        ' choose to set sanctions on behalf of another staff member (e.g. sometimes Alison Williams
+        ' will do this).
 
         StaffMemberCbx.Items.Clear()
 
         Try
 
-            Using SynergyOneConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
-                SynergyOneConn.Open()
+                SynergyConn.Open()
 
                 Using StaffListCmd As New SqlCommand(
                         ConfigurationManager.AppSettings("GetStaffListProc"),
-                        SynergyOneConn)
+                        SynergyConn)
 
                     StaffListCmd.CommandType = CommandType.StoredProcedure
 
@@ -169,10 +174,12 @@ Public Class Main
                                     email:=StaffListReader("Email").ToString))
                             Loop
                         End If
-                    End Using 'StaffListReader
-                End Using 'StaffListQuery
+
+                    End Using
+                End Using
 
                 ' Select the current user's entry in the Staff List by default. 
+
                 StaffMemberCbx.SelectedIndex = -1
                 For i = 0 To StaffMemberCbx.Items.Count - 1
                     Dim IndexUser As User = TryCast(StaffMemberCbx.Items(i), User)
@@ -199,9 +206,9 @@ Public Class Main
 
         Try
 
-            Using SynergyOneConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
-                SynergyOneConn.Open()
+                SynergyConn.Open()
 
                 ' =========================================================================================
                 ' 1. Add classes for the current user to the class selection ComboBox.
@@ -209,12 +216,13 @@ Public Class Main
 
                 Using StaffClassListCmd As New SqlCommand(
                     ConfigurationManager.AppSettings("GetClassesForStaffProc"),
-                    SynergyOneConn)
+                    SynergyConn)
 
                     StaffClassListCmd.CommandType = CommandType.StoredProcedure
                     StaffClassListCmd.Parameters.AddWithValue("StaffId", currentUser.id)
 
                     Using StaffClassListReader As SqlDataReader = StaffClassListCmd.ExecuteReader()
+
                         If StaffClassListReader.HasRows Then
                             Do While StaffClassListReader.Read()
                                 ClassCbx.Items.Add(New [Class](
@@ -222,9 +230,9 @@ Public Class Main
                                 StaffClassListReader("Description").ToString))
                             Loop
                         End If
-                    End Using 'StaffClassListReader
 
-                End Using 'StaffClassListQuery
+                    End Using
+                End Using
 
                 ClassCbx.Items.Add(comboboxSpacerText)
 
@@ -234,11 +242,12 @@ Public Class Main
 
                 Using AllClassesQuery As New SqlCommand(
                     ConfigurationManager.AppSettings("GetAllClassesProc"),
-                    SynergyOneConn)
+                    SynergyConn)
 
                     AllClassesQuery.CommandType = CommandType.StoredProcedure
 
                     Using AllClassesReader As SqlDataReader = AllClassesQuery.ExecuteReader()
+
                         If AllClassesReader.HasRows Then
                             Do While AllClassesReader.Read()
                                 ClassCbx.Items.Add(New [Class](
@@ -247,9 +256,9 @@ Public Class Main
                             Loop
                         End If
 
-                    End Using 'AllClassesReader
-                End Using 'AllClassesQuery
-            End Using 'SynergyConn
+                    End Using
+                End Using
+            End Using
 
         Catch Ex As Exception
             HandleError(Ex)
@@ -268,7 +277,7 @@ Public Class Main
         StudentsMbx.SelectedItem = Nothing
 
         Try
-            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
                 Using StudentsCmd As New SqlCommand(
                     ConfigurationManager.AppSettings("GetAllStudentsProc"), SynergyConn)
@@ -288,15 +297,16 @@ Public Class Main
                             Loop
                         End If
 
-                    End Using 'StudentsReader
-                End Using 'StudentsCmd
-            End Using 'SynergyConn
+                    End Using
+                End Using
+            End Using
 
         Catch Ex As Exception
             HandleError(Ex)
         End Try
 
     End Sub
+
 
 
     Private Sub PopulateSanctionsCbx()
@@ -310,44 +320,31 @@ Public Class Main
             SanctionTypeCbx.Items.Clear()
         End If
 
-        Try
-            Using SynergyConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
-                Using SanctionsCmd As New SqlCommand(
-                    ConfigurationManager.AppSettings("GetSanctionsForYearLevelProc"), SynergyConn)
+        ' Sanction types can vary based on the year level of the selected student. 
 
-                    SanctionsCmd.CommandType = CommandType.StoredProcedure
-                    SanctionsCmd.Parameters.AddWithValue("YearLevel", CType(StudentsMbx.SelectedItem, Student).yearLevel)
+        Dim sanctionTypes As List(Of String) = ConfigHandler.GetConfigValues(
+                keyValue1:="SanctionType",
+                keyValue2:=CType(StudentsMbx.SelectedItem, Student).yearLevel)
 
-                    SynergyConn.Open()
+        If sanctionTypes.Count < 1 Then
+            Throw New Exception(String.Format(
+                "Could not get sanction types from config table for student {0} {1} [{2}]",
+                CType(StudentsMbx.SelectedItem, Student).firstName,
+                CType(StudentsMbx.SelectedItem, Student).surname,
+                CType(StudentsMbx.SelectedItem, Student).id))
+        End If
 
-                    Using SanctionsReader As SqlDataReader = SanctionsCmd.ExecuteReader()
-                        If SanctionsReader.HasRows Then
-                            Do While SanctionsReader.Read()
-                                SanctionTypeCbx.Items.Add(SanctionsReader("SanctionType").ToString)
-                            Loop
-                        Else
-                            ' No sanctions found for this student. Should never happen, but... 
-                            MessageBox.Show("There was a problem selecting appropriate sanctions for this student." _
-                            + Environment.NewLine + "Please report this error to Data Management.",
-                            "Could Not Obtain Sanction List!",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error)
-                            Reset()
-                        End If
-
-                    End Using 'SanctionsReader
-                End Using 'SanctionsCmd
-            End Using 'SynergyConn
-
-        Catch Ex As Exception
-            HandleError(Ex)
-        End Try
+        For Each sanctionType As String In sanctionTypes
+            SanctionTypeCbx.Items.Add(sanctionType)
+        Next
 
     End Sub
 
 
-    Private Sub PopulateSanctionDatesCbx()
 
-        SanctionDateCbx.Items.Clear()
+    Private Sub PopulateDateSelectorCbx()
+
+        DateSelectorCbx.Items.Clear()
 
         If SanctionTypeCbx.SelectedItem = Nothing Then
             Return
@@ -355,38 +352,44 @@ Public Class Main
 
         Try
 
-            Using futureSanctionDatesConn As New SqlConnection(
-                        ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
-                Using futureSanctionDatesCmd As New SqlCommand(
-                        ConfigurationManager.AppSettings("GetFutureSanctionDatesProc"),
-                        futureSanctionDatesConn)
+            Using synergyConn As New SqlConnection(
+                        ConfigurationManager.ConnectionStrings("Synergy").ToString())
+                Using getSanctionDatesCmd As New SqlCommand(
+                        ConfigurationManager.AppSettings("GetSanctionDatesProc"),
+                        synergyConn)
 
-                    futureSanctionDatesCmd.CommandType = CommandType.StoredProcedure
-                    futureSanctionDatesCmd.Parameters.AddWithValue("StudentId", CType(StudentsMbx.SelectedItem, Student).id)
-                    futureSanctionDatesCmd.Parameters.AddWithValue("SanctionType", SanctionTypeCbx.Text)
+                    ' Sanction dates can vary based on sanction type (ie. some kinds of sanction 
+                    ' bookings may only be made for certain days in the future) and also based on 
+                    ' student year level (Junior School requested that sanction dates be in THE PAST
+                    ' because they use them only as a record of when a punishment was applied, not 
+                    ' to book a sanction in the future. 
 
-                    futureSanctionDatesConn.Open()
+                    getSanctionDatesCmd.CommandType = CommandType.StoredProcedure
+                    getSanctionDatesCmd.Parameters.AddWithValue("StudentId", CType(StudentsMbx.SelectedItem, Student).id)
+                    getSanctionDatesCmd.Parameters.AddWithValue("SanctionType", SanctionTypeCbx.Text)
 
-                    Using futureSanctionDatesRdr As SqlDataReader = futureSanctionDatesCmd.ExecuteReader()
+                    synergyConn.Open()
+
+                    Using sanctionDatesRdr As SqlDataReader = getSanctionDatesCmd.ExecuteReader()
 
                         Dim alreadyBooked As Boolean
                         Dim bookedByUser As User
 
-                        If futureSanctionDatesRdr.HasRows Then
-                            Do While futureSanctionDatesRdr.Read()
+                        If sanctionDatesRdr.HasRows Then
+                            Do While sanctionDatesRdr.Read()
 
-                                alreadyBooked = If(IsDBNull(futureSanctionDatesRdr("StaffId")), False, True)
+                                alreadyBooked = If(IsDBNull(sanctionDatesRdr("StaffId")), False, True)
                                 bookedByUser = If(
-                                    IsDBNull(futureSanctionDatesRdr("StaffId")),
+                                    IsDBNull(sanctionDatesRdr("StaffId")),
                                         Nothing,
                                         New User(
-                                            id:=futureSanctionDatesRdr("StaffId"),
-                                            firstName:=futureSanctionDatesRdr("StaffPreferred"),
-                                            surname:=futureSanctionDatesRdr("StaffSurname"),
-                                            email:=futureSanctionDatesRdr("StaffEmail")))
+                                            id:=sanctionDatesRdr("StaffId"),
+                                            firstName:=sanctionDatesRdr("StaffPreferred"),
+                                            surname:=sanctionDatesRdr("StaffSurname"),
+                                            email:=sanctionDatesRdr("StaffEmail")))
 
-                                SanctionDateCbx.Items.Add(New SanctionDate(
-                                    day:=Convert.ToDateTime(futureSanctionDatesRdr("Date").ToString).Date,
+                                DateSelectorCbx.Items.Add(New SanctionDate(
+                                    day:=Convert.ToDateTime(sanctionDatesRdr("Date").ToString).Date,
                                     alreadyBooked:=alreadyBooked,
                                     bookedBy:=bookedByUser))
 
@@ -416,7 +419,7 @@ Public Class Main
 
         Try
 
-            Using studentPhotoConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+            Using studentPhotoConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
                 Using studentPhotoCmd As New SqlCommand(
                         ConfigurationManager.AppSettings("GetPhotoDataForUserProc"), studentPhotoConn)
@@ -439,9 +442,9 @@ Public Class Main
                             StudentPhotoPbx.Hide()
                         End If
 
-                    End Using 'studentPhotoReader
-                End Using ' studentPhotoCmd
-            End Using ' studentPhotoConn
+                    End Using
+                End Using
+            End Using
 
             ' Display summary report of sanctions for the selected student. 
             Dim Params As New List(Of ReportParameter)
@@ -450,6 +453,8 @@ Public Class Main
             Me.ReportViewer1.RefreshReport()
             Me.ReportViewer1.Visible = True
 
+            ' Different sanction types are available for different student year levels. 
+            ' So we re-populate the available sanctions list every time a new student is selected. 
             PopulateSanctionsCbx()
 
             StaffMemberLbl.Show()
@@ -485,10 +490,11 @@ Public Class Main
 
         TaskNameTbx.Hide()
 
+        IncidentDateLbl.Hide()
         SanctionDateLbl.Hide()
-        SanctionDateCbx.SelectedItem = Nothing
-        SanctionDateCbx.Text = Nothing
-        SanctionDateCbx.Hide()
+        DateSelectorCbx.SelectedItem = Nothing
+        DateSelectorCbx.Text = Nothing
+        DateSelectorCbx.Hide()
 
         ReasonLbl.Hide()
         ReasonCbx.SelectedItem = Nothing
@@ -507,9 +513,12 @@ Public Class Main
 
     End Sub
 
-
     Private Sub SanctionTypeCbx_SelectedIndexChanged(
             sender As Object, e As EventArgs) Handles SanctionTypeCbx.SelectedIndexChanged
+
+        If SanctionTypeCbx.SelectedIndex = -1 Then
+            Return
+        End If
 
         ' Hide the specialised controls by default, reveal later based on chosen sanction type. 
         HideAllSanctionControls()
@@ -541,15 +550,22 @@ Public Class Main
 
                 Case Else
 
-                    SanctionDateLbl.Show()
-                    SanctionDateCbx.Show()
+                    If CType(StudentsMbx.SelectedItem, Student).yearLevel <= juniorSchoolFinalYear Then
+                        IncidentDateLbl.Show()
+                        SanctionDateLbl.Hide()
+                    Else
+                        IncidentDateLbl.Hide()
+                        SanctionDateLbl.Show()
+                    End If
+
+                    DateSelectorCbx.Show()
                     ReasonLbl.Show()
                     ReasonCbx.Show()
                     InformationOnlyLbl.Show()
                     InformationOnlyLbl.Show()
                     InformationOnlyChk.Show()
 
-                    PopulateSanctionDatesCbx()
+                    PopulateDateSelectorCbx()
             End Select
 
         Catch Ex As Exception
@@ -620,18 +636,18 @@ Public Class Main
 
                     ' Catchups and both detention types. 
 
-                    If CType(SanctionDateCbx.SelectedItem, SanctionDate).alreadyBooked Then
+                    If CType(DateSelectorCbx.SelectedItem, SanctionDate).alreadyBooked Then
                         MessageBox.Show("Please select a date that is not already booked by another staff member.", "Booking Clash!",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Exit Sub
-                    ElseIf SanctionDateCbx.Text = "" Then
+                    ElseIf DateSelectorCbx.Text = "" Then
                         MessageBox.Show("Please select the date of the sanction.", "No Date Selected!",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Exit Sub
                     ElseIf (SanctionTypeCbx.Text = "Catch up class" Or SanctionTypeCbx.Text = "Detention (Level 1: Lunchtime)") _
-                            And (CDate(SanctionDateCbx.Text).DayOfWeek = 2 Or CDate(SanctionDateCbx.Text).DayOfWeek = 4) _
+                            And (CDate(DateSelectorCbx.Text).DayOfWeek = 2 Or CDate(DateSelectorCbx.Text).DayOfWeek = 4) _
                             And InformationOnlyChk.Checked = False Then
-                        MessageBox.Show("Catch up classes and detentions can only be booked on a Tuesday or Thursday if administered in full by the setting teacher. Please signify that this is the case by ticking the 'Information Only' box, or change the date of the booking to a Monday, Wednesday or Friday.", "Day of Week Issue!",
+                        MessageBox.Show("Catch up classes and lunchtime detentions can only be booked on a Tuesday or Thursday if administered in full by the setting teacher. Please signify that this is the case by ticking the 'Information Only' box, or change the date of the booking to a Monday, Wednesday or Friday.", "Day of Week Issue!",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Exit Sub
                     ElseIf Trim(ReasonCbx.Text) = "" Then
@@ -682,11 +698,11 @@ Public Class Main
 
                     sanctionCode = SanctionTypeCbx.Text
                     reasonType = ReasonCbx.Text
-                    sanctionDate = CType(SanctionDateCbx.Text, Date).ToString("yyyy-MM-dd")
+                    sanctionDate = CType(DateSelectorCbx.Text, Date).ToString("yyyy-MM-dd")
 
             End Select
 
-            Using submitConn As New SqlConnection(ConfigurationManager.ConnectionStrings("SynergyOneConnectionString").ToString())
+            Using submitConn As New SqlConnection(ConfigurationManager.ConnectionStrings("Synergy").ToString())
 
                 Using submitCmd As New SqlCommand(ConfigurationManager.AppSettings("CreateSanctionProc"), submitConn)
 
@@ -701,7 +717,7 @@ Public Class Main
                     submitCmd.Parameters.AddWithValue("SummativeTaskName", summativeTaskName)
                     submitCmd.Parameters.AddWithValue("SummativeDueDate", summativeDueDate)
                     submitCmd.Parameters.AddWithValue("Comment", CommentTbx.Text)
-                    submitCmd.Parameters.AddWithValue("Completed", CInt(InformationOnlyChk.Checked))
+                    submitCmd.Parameters.AddWithValue("InformationOnly", CInt(InformationOnlyChk.Checked))
                     submitCmd.Parameters.AddWithValue("ModifiedBy", currentUser.id)
 
                     submitConn.Open()
@@ -737,23 +753,27 @@ Public Class Main
 
 
     Private Sub SanctionDateCbx_SelectedIndexChanged(
-            sender As Object, e As EventArgs) Handles SanctionDateCbx.SelectedIndexChanged
+            sender As Object, e As EventArgs) Handles DateSelectorCbx.SelectedIndexChanged
 
-        If SanctionDateCbx.SelectedItem Is Nothing Then
+        If DateSelectorCbx.SelectedItem Is Nothing Then
             Return
         End If
 
-        Dim selectedDate As SanctionDate = CType(SanctionDateCbx.SelectedItem, SanctionDate)
+        Dim selectedDate As SanctionDate = CType(DateSelectorCbx.SelectedItem, SanctionDate)
         If selectedDate.alreadyBooked Then
             MsgBox(
                 "Sorry, that date has already been booked by another staff member. " +
                 "Please select a different date.",
                 MsgBoxStyle.Exclamation)
 
-            SanctionDateCbx.SelectedIndex = -1
-            SanctionDateCbx.SelectedItem = Nothing
+            DateSelectorCbx.SelectedIndex = -1
+            DateSelectorCbx.SelectedItem = Nothing
         End If
 
     End Sub
 
+    Private Sub ViewCurrentBookingsBtn_Click(sender As Object, e As EventArgs) Handles ViewCurrentBookingsBtn.Click
+        sanctionsForUser = New SanctionsForUser(currentUser)
+        sanctionsForUser.ShowDialog()
+    End Sub
 End Class
